@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 
-public class LoadSceneCity : MonoBehaviour
+public class City : MonoBehaviour
 {
 
     private void OnTriggerEnter2D()

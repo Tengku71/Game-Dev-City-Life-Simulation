@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 
-public class LoadSceneRumah1 : MonoBehaviour
+public class Rumah1 : MonoBehaviour
 {
 
     private void OnTriggerEnter2D()

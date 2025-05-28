@@ -7,10 +7,14 @@ public class PauseButton : MonoBehaviour
 {
 
     [SerializeField] GameObject pauseMenu;
+    [SerializeField] GameObject analog;
+    [SerializeField] GameObject analogCircle;
 
     public void Pause()
     {
         pauseMenu.SetActive(true);
+        pauseMenu.SetActive(false);
+        pauseMenu.SetActive(false);
     }
 
     public void Home()
