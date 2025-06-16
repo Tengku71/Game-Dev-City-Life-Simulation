@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -27,10 +27,6 @@ public class MoneyManager : MonoBehaviour
 
     private void Awake()
     {
-
-        StartMoneyRoutineIfNeeded();
-        UpdateUI();
-
         if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
@@ -40,20 +36,23 @@ public class MoneyManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
 
-        // Load money from PlayerPrefs or use initial value
+        // Load money FIRST
         money = PlayerPrefs.HasKey("Money") ? PlayerPrefs.GetFloat("Money") : initialMoney;
 
+        // THEN start routines and subscribe
+        StartMoneyRoutineIfNeeded();
+        UpdateUI();
+
         SceneManager.sceneLoaded += OnSceneLoaded;
+
+        // Subscribe to timed events
+        TimeManagement.OnFiveMinutesPassed += TriggerMidEvent;
+        TimeManagement.OnTenMinutesPassed += TriggerFinalEvent;
     }
 
-    //private void Start()
-    //{
-       
-    //}
 
     private void Update()
     {
-        // Reset money with 'R' key (for testing)
         if (Input.GetKeyDown(KeyCode.R))
         {
             ResetMoney();
@@ -123,13 +122,6 @@ public class MoneyManager : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        //// Auto-reset if entering a "NewGame" scene
-        //if (scene.name == "NewGame")
-        //{
-        //    ResetMoney();
-        //}
-
-        // Re-link UI
         moneyText = GameObject.FindWithTag("MoneyText")?.GetComponent<TMP_Text>();
         reductionSlider = GameObject.FindWithTag("ReductionSlider")?.GetComponent<Slider>();
         reductionValueText = GameObject.FindWithTag("ReductionValueText")?.GetComponent<TMP_Text>();
@@ -137,5 +129,34 @@ public class MoneyManager : MonoBehaviour
         timeValueText = GameObject.FindWithTag("TimeValueText")?.GetComponent<TMP_Text>();
 
         UpdateUI();
+    }
+
+    private void TriggerMidEvent()
+    {
+        float rand = Random.value;
+        if (rand < 0.5f)
+        {
+            money -= 200;
+            Debug.Log("💥 Event: Resesi Ekonomi! Kehilangan 200 uang.");
+        }
+        else
+        {
+            money += 300;
+            Debug.Log("🎉 Event: Peluang Investasi! Mendapatkan 300 uang.");
+        }
+
+        SaveMoney();
+        UpdateUI();
+    }
+
+    private void TriggerFinalEvent()
+    {
+        Debug.Log("⏰ 10 menit berlalu. Akhir fase waktu. Tidak ada event tambahan.");
+    }
+
+    private void OnDestroy()
+    {
+        TimeManagement.OnFiveMinutesPassed -= TriggerMidEvent;
+        TimeManagement.OnTenMinutesPassed -= TriggerFinalEvent;
     }
 }
